@@ -1,7 +1,7 @@
 #[derive(PartialEq)]
 enum ColorFormat {
     Hex,
-    Decimal,
+    Rgb,
 }
 
 pub struct Converter {
@@ -10,7 +10,7 @@ pub struct Converter {
 }
 
 impl Converter {
-    pub fn new(input_color_code: String, hex: bool, decimal: bool) -> Result<Converter, String> {
+    pub fn new(input_color_code: String, is_hex: bool, is_rgb: bool) -> Result<Converter, String> {
         let color_code: String;
         match Converter::validate_color_code(input_color_code) {
             Ok(c) => color_code = c,
@@ -18,7 +18,7 @@ impl Converter {
         }
 
         let output_format: ColorFormat;
-        match Converter::validate_format(hex, decimal) {
+        match Converter::validate_format(is_hex, is_rgb) {
             Ok(o) => output_format = o,
             Err(err) => return Err(err),
         }
@@ -37,18 +37,18 @@ impl Converter {
         Ok(color_code)
     }
 
-    fn validate_format(hex: bool, decimal: bool) -> Result<ColorFormat, String> {
+    fn validate_format(is_hex: bool, is_rgb: bool) -> Result<ColorFormat, String> {
         let output_format: ColorFormat;
-        if hex && decimal {
-            return Err(String::from("Only one of the two color output formats can be set.\nChoose either --hex / -H or --decimal / -D."));
+        if is_hex && is_rgb {
+            return Err(String::from("Only one of the two color output formats can be set.\nChoose either --is_hex / -H or --is_rgb / -D."));
         }
 
-        if hex {
+        if is_hex {
             output_format = ColorFormat::Hex;
-        } else if decimal {
-            output_format = ColorFormat::Decimal;
+        } else if is_rgb {
+            output_format = ColorFormat::Rgb;
         } else {
-            return Err(String::from("At least one color output format must be specified.\nChoose either --hex / -H or --decimal / -D."));
+            return Err(String::from("At least one color output format must be specified.\nChoose either --is_hex / -H or --is_rgb / -D."));
         }
 
         Ok(output_format)
@@ -59,8 +59,8 @@ impl Converter {
 
         if self.output_format == ColorFormat::Hex {
             format = String::from("hexadecimal");
-        } else if self.output_format == ColorFormat::Decimal {
-            format = String::from("decimal")
+        } else if self.output_format == ColorFormat::Rgb {
+            format = String::from("RGB")
         }
 
         println!(

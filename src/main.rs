@@ -7,7 +7,7 @@ fn main() {
     let args = cli::Cli::parse();
 
     let conv: converter::Converter;
-    match converter::Converter::new(args.input_color, args.hex, args.decimal) {
+    match converter::Converter::new(args.input_color, args.hex, args.rgb) {
         Ok(c) => conv = c,
         Err(error) => {
             println!("\n{}\n", error);
