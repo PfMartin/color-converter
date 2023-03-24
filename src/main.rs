@@ -6,7 +6,14 @@ mod converter;
 fn main() {
     let args = cli::Cli::parse();
 
-    let converter = converter::Converter::new(args.name);
+    let conv: converter::Converter;
+    match converter::Converter::new(args.input_color, args.hex, args.decimal) {
+        Ok(c) => conv = c,
+        Err(error) => {
+            println!("\n{}\n", error);
+            return;
+        }
+    }
 
-    converter.greet()
+    conv.print_info()
 }
