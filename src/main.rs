@@ -1,3 +1,7 @@
+mod converter;
+
 fn main() {
-    println!("Hello, world!");
+    let converter = converter::Converter::new(String::from("Martin"));
+
+    converter.greet()
 }
