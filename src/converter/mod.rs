@@ -90,3 +90,27 @@ impl Converter {
         format
     }
 }
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn validates_input_parameters() {
+        let test_cases = [
+            (String::from("ffffff"), String::from("255,255,255"), true),
+            (DEFAULT_INPUT, String::from("255,255,255"), false),
+            (String::from("ffffff"), DEFAULT_INPUT, false),
+        ];
+
+        for (hex, rgb, has_err) in test_cases.iter() {
+            let mut e = String::new();
+
+            match Converter::validate_input_parameter(&rgb, &hex) {
+                Ok(ok) => ok,
+                Err(err) => e = err,
+            }
+            assert_eq!(e != String::new(), *has_err)
+        }
+    }
+}
