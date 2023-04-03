@@ -1,4 +1,6 @@
-#[derive(Clone, Copy, PartialEq)]
+use crate::DEFAULT_INPUT;
+
+#[derive(Clone, Copy, PartialEq, Debug)]
 enum ColorFormat {
     Hex,
     Rgb,
@@ -11,65 +13,40 @@ pub struct Converter {
 }
 
 impl Converter {
-    pub fn new(input_color_code: String, is_hex: bool, is_rgb: bool) -> Result<Converter, String> {
-        let color_code: String;
+    pub fn new(rgb: String, hex: String) -> Result<Converter, String> {
         let input_format: ColorFormat;
-        match Converter::validate_color_code(input_color_code) {
-            Ok((c, f)) => {
-                color_code = c;
-                input_format = f;
-            }
+        match Converter::validate_rgb_format(&rgb) {
+            Ok(_) => input_format = ColorFormat::Rgb,
             Err(err) => return Err(err),
         }
 
         let output_format: ColorFormat;
-        match Converter::validate_format(is_hex, is_rgb) {
-            Ok(o) => output_format = o,
-            Err(err) => return Err(err),
+        let input_color: String;
+        if input_format == ColorFormat::Rgb && rgb != DEFAULT_INPUT {
+            output_format = ColorFormat::Hex;
+            input_color = rgb;
+        } else if input_format == ColorFormat::Hex && hex != DEFAULT_INPUT {
+            output_format = ColorFormat::Rgb;
+            input_color = hex;
+        } else {
+            return Err(String::from("Could not determine the output format"));
         }
 
         Ok(Converter {
-            input_color_code: color_code,
+            input_color_code: input_color,
             input_format: input_format,
             output_format: output_format,
         })
     }
 
-    fn validate_color_code(color_code: String) -> Result<(String, ColorFormat), String> {
-        let input_format: ColorFormat;
+    fn validate_rgb_format(rgb: &String) -> Result<(), String> {
+        if rgb.contains('.') {
+            let err_string = format!("{} is not a valid RGB color code. RGB doesn't use '.'", rgb);
 
-        if color_code.contains('.') {
-            return Err(String::from("Not a valid color code"));
+            return Err(err_string);
         }
 
-        if color_code.contains(',') {
-            input_format = ColorFormat::Rgb;
-        } else if color_code.starts_with('#') {
-            input_format = ColorFormat::Hex;
-        } else {
-            return Err(String::from(
-                "Couldn't determine the format of the input color code",
-            ));
-        }
-
-        Ok((color_code, input_format))
-    }
-
-    fn validate_format(is_hex: bool, is_rgb: bool) -> Result<ColorFormat, String> {
-        let output_format: ColorFormat;
-        if is_hex && is_rgb {
-            return Err(String::from("Only one of the two color output formats can be set.\nChoose either --is_hex / -H or --is_rgb / -D."));
-        }
-
-        if is_hex {
-            output_format = ColorFormat::Hex;
-        } else if is_rgb {
-            output_format = ColorFormat::Rgb;
-        } else {
-            return Err(String::from("At least one color output format must be specified.\nChoose either --is_hex / -H or --is_rgb / -D."));
-        }
-
-        Ok(output_format)
+        return Ok(());
     }
 
     pub fn print_info(&self) {
