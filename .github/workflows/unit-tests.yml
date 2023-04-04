@@ -1,4 +1,4 @@
-name: build
+name: unit-tests
 
 on:
   push:
@@ -8,10 +8,10 @@ env:
   CARGO_TERM_COLOR: always
 
 jobs:
-  build:
+  unit-tests:
     runs-on: ubuntu-latest
 
     steps:
     - uses: actions/checkout@v3
-    - name: build
-      run: cargo build --verbose
+    - name: unit-tests
+      run: cargo test --verbose
